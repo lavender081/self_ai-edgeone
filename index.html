@@ -7,6 +7,8 @@
     <style>
         :root {
             --primary-color: #2563EB;
+            --primary-light: #EFF6FF;
+            --primary-border: #BFDBFE;
             --dark-main: #0F172A;
             --text-body: #475569;
             --text-muted: #94A3B8;
@@ -95,22 +97,47 @@
             border: 1px solid rgba(0,0,0,0.03);
         }
 
-        .hero-content .description {
-            font-size: 16px;
+        .description-list {
+            list-style: none;
             margin-bottom: 32px;
         }
 
-        .hero-content .highlight {
-            font-weight: 600;
+        .description-list li {
+            font-size: 15px;
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+            color: var(--text-body);
+        }
+
+        .description-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        .description-list strong {
             color: var(--dark-main);
+            font-weight: 600;
         }
 
         .basic-info {
             display: flex;
-            flex-wrap: wrap;
-            gap: 16px 24px;
+            flex-direction: column;
+            gap: 16px;
             padding-top: 24px;
             border-top: 1px solid var(--border-light);
+        }
+
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
         }
 
         .info-item {
@@ -129,6 +156,46 @@
 
         .info-item a:hover {
             color: var(--primary-color);
+        }
+
+        .skills-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .skills-label {
+            font-size: 14px;
+            color: var(--text-body);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .skills-list span {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-body);
+            background-color: var(--bg-tag);
+            border: 1px solid transparent; 
+            padding: 3px 10px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .skills-list span:hover {
+            color: var(--dark-main);
+            background-color: var(--border-light);
         }
 
         .chat-container {
@@ -171,7 +238,6 @@
 
         .chat-messages {
             flex: 1;
-            max-height: 400px;
             padding: 24px;
             overflow-y: auto;
             background-color: var(--bg-body);
@@ -285,16 +351,16 @@
         }
 
         .project-card {
-            flex: 0 0 calc(33.333% - 20px);
+            flex: 0 0 calc(33.333% - 12px);
             background-color: var(--bg-card);
             border-radius: 12px;
             border: 1px solid var(--border-light);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin: 0 10px;
+            margin: 0 6px;
             position: relative;
             display: flex;
             flex-direction: column;
-            min-height: 340px;
+            min-height: 420px; /* 稍微增高卡片以容纳固定高度对齐 */
         }
 
         .project-card:hover {
@@ -321,35 +387,58 @@
             z-index: 1;
         }
 
+        /* ==== 卡片排版核心修复点 ==== */
+
         .project-content h3 {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: var(--dark-main);
             line-height: 1.4;
+            /* 对齐规则1：将标题高度锁死为2行，不足则下方留白对齐 */
+            height: 50px; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .project-meta {
             font-size: 13px;
             color: var(--text-muted);
             margin-bottom: 16px;
+            /* 对齐规则2：将副标题锁死为2行 */
+            height: 42px; 
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .project-description {
             font-size: 14px;
             color: var(--text-body);
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             line-height: 1.6;
+            /* 对齐规则3：用flex:1将描述部分变成自适应弹性空间。它会吸收掉因字数不同产生的误差，将底部的标签死死地向下推对齐。*/
+            flex: 1; 
+            display: -webkit-box;
+            -webkit-line-clamp: 5; /* 最高限制5行防止爆板 */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .tech-tags {
-            margin-bottom: 24px;
+            margin-bottom: 16px;
+            /* 对齐规则4：固定标签容器的高度为2排，所有标签顶部和底部彻底水平对齐 */
+            height: 66px; 
+            overflow: hidden;
         }
 
         .tech-tags span {
             display: inline-block;
             margin-right: 6px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             padding: 4px 10px;
             background-color: var(--bg-tag);
             color: var(--text-body);
@@ -358,7 +447,6 @@
         }
 
         .project-link {
-            margin-top: auto;
             align-self: flex-start;
             display: inline-block;
             color: var(--text-body);
@@ -366,10 +454,7 @@
             font-size: 14px;
             font-weight: 500;
             transition: color 0.2s ease;
-        }
-
-        .project-link:hover {
-            color: var(--primary-color);
+            line-height: 1.2;
         }
 
         .project-link-placeholder {
@@ -377,6 +462,8 @@
             height: 20px;
             width: 80px;
         }
+
+        /* ==== 卡片排版核心修复点 结束 ==== */
 
         .carousel-btn {
             width: 40px; height: 40px;
@@ -528,7 +615,16 @@
             .avatar { width: 60px; height: 60px; }
             .hero-content h1 { font-size: 24px; margin-bottom: 12px; }
             .hero-tags { gap: 8px; margin-bottom: 20px; }
-            .basic-info { padding-top: 16px; gap: 10px; }
+            
+            .description-list li { font-size: 14px; }
+            .basic-info { padding-top: 16px; gap: 12px; }
+            
+            .skills-container {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .skills-label { margin-top: 0; }
+            .skills-list span { padding: 3px 8px; font-size: 12px; }
 
             .chat-messages {
                 height: 240px;
@@ -536,21 +632,9 @@
                 box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
             }
 
-            .chat-input {
-                padding: 12px 16px;
-                gap: 8px;
-            }
-            .chat-input input {
-                height: 38px;
-            }
-            .chat-input button {
-                height: 38px;
-                padding: 0 16px;
-            }
-
-            .tech-tags span {
-                border-radius: 99px;
-            }
+            .chat-input { padding: 12px 16px; gap: 8px; }
+            .chat-input input { height: 38px; }
+            .chat-input button { height: 38px; padding: 0 16px; }
 
             .projects-carousel { display: block; }
             .carousel-btn { display: none; }
@@ -559,15 +643,29 @@
                 transform: none !important;
                 gap: 20px;
             }
+
             .project-card {
                 flex: none;
                 width: 100%;
                 margin: 0;
                 min-height: auto;
             }
-            .project-content {
-                min-height: auto !important;
+            .project-content { min-height: auto !important; }
+
+            /* 移动端覆盖：移动端竖向排版不需要僵硬对齐，取消固定高度，恢复自然流式排版 */
+            .project-content h3, 
+            .project-meta, 
+            .tech-tags {
+                height: auto;
+                display: block;
             }
+            .project-description {
+                flex: none;
+                -webkit-line-clamp: unset;
+                margin-bottom: 16px;
+            }
+            .tech-tags span { border-radius: 99px; }
+
             .carousel-indicators { display: none; }
 
             .timeline::before { left: 6px; }
@@ -615,24 +713,33 @@
                 <h1>你好，我是 Lavender</h1>
 
                 <div class="hero-tags">
-                    <span>数字能源/智慧城市产品与业务专家</span>
-                    <span>7年复杂政企(ToG/ToB)大客户落地经验</span>
+                    <span>数字能源/智慧城市业务专家</span>
+                    <span>7年复杂政企大客户落地经验</span>
                 </div>
 
-                <p class="description">具备严谨的数理逻辑认知，深耕综合能源管理与政企数字化。曾主导国家级/省级千万级政务平台从0到1落地，擅长应对具有强政策属性和多方利益博弈的复杂业务。拥有敏锐的 AI 嗅觉，熟练运用 Vibe Coding 等 AI 原生开发流，将 AI 技术与业务相结合。</p>
+                <ul class="description-list">
+                    <li><strong>政企/ToB破局</strong>：主导过国家级/省级千万级政务平台从0到1落地，擅长应对强政策属性与多方利益博弈，精准转化宏观业务规则。</li>
+                    <li><strong>全域业务操盘</strong>：具备严谨的数理逻辑认知，深耕综合能源管理与政企数字化业务领域。</li>
+                    <li><strong>AI 原生思维</strong>：拥有敏锐的 AI 嗅觉，熟练运用 Vibe Coding 开发流，推动 AI 技术与业务场景深度融合。</li>
+                </ul>
 
                 <div class="basic-info">
-                    <div class="info-item">
-                        <span>👤</span> 女 | 1996-09出生
+                    <div class="info-row">
+                        <div class="info-item"><span>👤</span> 女 | 1996-09</div>
+                        <div class="info-item"><span>📱</span> 17816872286</div>
+                        <div class="info-item"><span>✉️</span> <a href="mailto:17816872286@163.com">17816872286@163.com</a></div>
+                        <div class="info-item"><span>🎓</span> 浙江大学/物理系/本科</div>
                     </div>
-                    <div class="info-item">
-                        <span>📱</span> 17816872286
-                    </div>
-                    <div class="info-item">
-                        <span>✉️</span> <a href="mailto:17816872286@163.com">17816872286@163.com</a>
-                    </div>
-                    <div class="info-item">
-                        <span>💡</span> 技能与证书：Vibe Coding、Axure、PMP项目管理、MySQL、Python
+                    
+                    <div class="skills-container">
+                        <div class="skills-label"><span>💡</span> 核心技能与认证：</div>
+                        <div class="skills-list">
+                            <span>Vibe Coding</span>
+                            <span>Axure</span>
+                            <span>PMP</span>
+                            <span>MySQL</span>
+                            <span>Python</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -653,7 +760,7 @@
         </section>
 
         <section class="projects-section card-shadow">
-            <h2 class="section-title">项目成果</h2>
+            <h2 class="section-title">核心项目</h2>
 
             <div class="projects-carousel">
                 <button class="carousel-btn prev-btn">←</button>
@@ -665,12 +772,11 @@
                             <div class="project-content">
                                 <h3>综合能源管理系统</h3>
                                 <div class="project-meta">2025-04 至今 | 产品经理</div>
-                                <p class="project-description">主导新一代SaaS化综合能源管理(EMS)平台从0到1架构设计与商业化落地；构建深度的AIoT物联底座，实现‘监测-计量-计费-管控’业务闭环；在架构上规划零碳园区的发展方向，为海量中小建筑参与电网互动及能源调度奠定物理与数据基础。</p>
+                                <p class="project-description">主导新一代 EMS 平台 0-1 架构设计与商业化落地；构建深度 AIoT 物联底座，打通“监测-计量-计费-管控”闭环；为海量中小建筑参与电网互动及虚拟电厂演进奠定数据基础。</p>
                                 <div class="tech-tags">
-                                    <span>产品从0-1</span>
-                                    <span>AIOT</span>
+                                    <span>0-1 产品操盘</span>
+                                    <span>AIoT底座</span>
                                     <span>能源管理</span>
-                                    <span>微电网底座</span>
                                 </div>
                                 <a href="https://a.bbicloud.com/v2/#/index-pc" target="_blank" class="project-link">查看项目详情</a>
                             </div>
@@ -679,13 +785,12 @@
                         <div class="project-card">
                             <div class="project-number">02</div>
                             <div class="project-content">
-                                <h3>上海市闵行区市场监管局智慧监管云中心项目</h3>
-                                <div class="project-meta">2021-04 至 2024-06 | 项目经理</div>
-                                <p class="project-description">统筹千万级政务核心监管中枢的顶层规划与全生命周期建设。攻克‘信创国产化’与‘跨部门海量数据融通’难题。深谙强监管、多方利益博弈的G端大项目运作逻辑，具备将宏观政策指令精准转化为平台底层业务规则的实战经验。</p>
+                                <h3>闵行区智慧监管云中心</h3>
+                                <div class="project-meta">2021-04 - 2024-06 | 项目经理</div>
+                                <p class="project-description">统筹千万级政务核心监管中枢顶层规划与全生命周期建设。攻克“信创国产化”与“跨部门数据融通”难题。将宏观政策指令精准转化为平台底层业务规则。</p>
                                 <div class="tech-tags">
-                                    <span>政务信息化</span>
-                                    <span>项目全生命周期管理</span>
-                                    <span>国产化改造</span>
+                                    <span>千万级G端大单</span>
+                                    <span>信创改造</span>
                                     <span>复杂系统架构</span>
                                 </div>
                                 <a href="https://mp.weixin.qq.com/s/yfIx3DY3BKEgqCRA7I5zdQ" target="_blank" class="project-link">查看项目详情</a>
@@ -695,14 +800,13 @@
                         <div class="project-card">
                             <div class="project-number">03</div>
                             <div class="project-content">
-                                <h3>微度医疗CRM优化项目</h3>
-                                <div class="project-meta">2025-01 至 2025-03 | 客户成功项目经理</div>
-                                <p class="project-description">作为核心业务接口人，跨部门统筹客户CRM体系的售前攻坚与全生命周期交付。通过数据洞察驱动商业策略优化，提升客户续费率与商业化变现效率。</p>
+                                <h3>微度医疗 CRM 优化项目</h3>
+                                <div class="project-meta">2025-01 - 2025-03 | 客户成功项目经理</div>
+                                <p class="project-description">作为核心业务接口人，跨部门统筹客户 CRM 体系的售前攻坚与交付实施。通过数据洞察驱动商业策略优化，显著提升客户续费率与变现效率。</p>
                                 <div class="tech-tags">
                                     <span>ToB SaaS</span>
-                                    <span>CRM</span>
-                                    <span>项目全流程交付</span>
-                                    <span>客户成功</span>
+                                    <span>全流程交付</span>
+                                    <span>商业策略优化</span>
                                 </div>
                                 <a href="https://www.fxiaoke.com/ap/sem?utm_source=%E7%99%BE%E5%BA%A6&utm_medium=bdbrand&utm_term=pz" target="_blank" class="project-link">查看项目详情</a>
                             </div>
@@ -711,14 +815,13 @@
                         <div class="project-card">
                             <div class="project-number">04</div>
                             <div class="project-content">
-                                <h3>国家市场监管总局智慧监管中心综合展示建设项目</h3>
-                                <div class="project-meta">2020-08 至 2021-03 | 产品经理</div>
-                                <p class="project-description">统筹国家级政务项目团队管理与跨部门需求协调，完成5大业务局全量需求梳理、产品原型设计，推动国家级智慧监管中枢产品顺利上线</p>
+                                <h3>市监总局智慧监管中心综合展示</h3>
+                                <div class="project-meta">2020-08 - 2021-03 | 产品经理</div>
+                                <p class="project-description">统筹国家级政务项目团队管理与协调，完成 5 大核心业务局全量需求梳理与产品原型设计，确保国家级智慧监管中枢平稳上线。</p>
                                 <div class="tech-tags">
                                     <span>国家级政务项目</span>
-                                    <span>需求管理</span>
+                                    <span>需求统筹</span>
                                     <span>产品设计</span>
-                                    <span>跨部门协调</span>
                                 </div>
                                 <span class="project-link-placeholder"></span>
                             </div>
@@ -727,14 +830,13 @@
                         <div class="project-card">
                             <div class="project-number">05</div>
                             <div class="project-content">
-                                <h3>河北省市场监管局系列信息化项目</h3>
-                                <div class="project-meta">2019-12 至 2020-07 | 售前解决方案负责人</div>
-                                <p class="project-description">独立完成省级应急指挥平台项目高层宣讲与方案落地，项目验收后实现全省推广；协助完成全省市场监管信息化顶层设计，制定统一建设标准与规范</p>
+                                <h3>河北省市场监管局信息化系统</h3>
+                                <div class="project-meta">2019-12 - 2020-07 | 售前解决负责人</div>
+                                <p class="project-description">独立操盘省级应急指挥平台高层宣讲与方案落地，验收后全省推广；协助完成全省市场监管信息化顶层设计，建立全省统一建设标准。</p>
                                 <div class="tech-tags">
                                     <span>政务售前</span>
-                                    <span>解决方案</span>
                                     <span>顶层设计</span>
-                                    <span>应急指挥平台</span>
+                                    <span>应急指挥</span>
                                 </div>
                                 <span class="project-link-placeholder"></span>
                             </div>
@@ -760,37 +862,32 @@
                     <div class="timeline-content">
                         <h3>杭州基础创新科技有限公司 | 产品经理</h3>
                         <ul>
-                            <li>构建面向数字能源与微电网的底层AIoT架构，主导打通智能配电、水务与边缘侧设备的数据壁垒，深入研究电价策略及碳核算模型，为平台向策略控制与虚拟电厂聚合演进奠定物理与数据基础</li>
-                            <li>主导新一代智慧综合能源管理（EMS）平台的从0到1架构与商业化落地，规划引入基于AI与历史数据的用电负荷分析，完成从商业Charter规划到软硬件协同研发的全链路管控</li>
-                            <li>推动智能配电产品完成市场调研、竞品分析到原型设计的核心阶段跃迁</li>
-                            <li>作为核心业务专家支撑大客户攻坚，将晦涩的能源优化逻辑转化为客户可感知的投资回报模型，成功推动商业化签约</li>
+                            <li><strong>底座构建</strong>：搭建底层 AIoT 架构，打通配电、水务等边缘侧数据，研究碳核算模型，为虚拟电厂聚合演进奠定基础。</li>
+                            <li><strong>平台落地</strong>：主导新一代 EMS 平台 0-1 架构与落地，引入 AI 负荷分析，完成商业规划到软硬件协同研发的全链路管控。</li>
+                            <li><strong>商业变现</strong>：支撑核心大客户攻坚，将晦涩的能源优化逻辑转化为直观的投资回报模型，促成多项商业化签约。</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">2024-09 至 2025-03</div>
+                    <div class="timeline-date">2024-09 - 2025-03</div>
                     <div class="timeline-content">
                         <h3>纷享销客浙江分公司 | 客户成功项目经理</h3>
                         <ul>
-                            <li>深耕ToB SaaS领域，深度挖掘客户业务需求，主导多项目全流程交付，统筹跨部门资源保障项目按期高质量落地</li>
-                            <li>协同客户成功团队完成售前方案输出、需求对接与技术宣讲，助力多个项目顺利签约</li>
+                            <li><strong>项目交付</strong>：深度挖掘 ToB SaaS 客户需求，统筹多项目全生命周期交付，协调跨部门资源保障项目高质量落地。</li>
+                            <li><strong>售前攻坚</strong>：协同团队完成售前方案输出与技术宣讲，赋能销售端，助力多个重点项目顺利签约。</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">2019-04 至 2024-06</div>
+                    <div class="timeline-date">2019-04 - 2024-06</div>
                     <div class="timeline-content">
-                        <h3>天玑智成（北京）科技有限公司 | 产品经理 → 项目经理/售前解决方案负责人</h3>
-                        <h4>2021-04 至 2024-06 | 项目经理/售前解决方案负责人</h4>
+                        <h3>天玑智成（北京）科技有限公司 | 项目经理 & 产品经理</h3>
                         <ul>
-                            <li>主导国家级/省级智慧监管平台从顶层设计到落地的全流程。具备极强的宏观政策/行业标准解读能力</li>
-                            <li>带领团队完成1500W+大型政务项目交付，积累了在多方利益博弈（政府监管方、执行方、平台方）中推动复杂系统落地的卓越操盘能力</li>
-                        </ul>
-                        <h4>2019-04 至 2021-03 | 产品经理</h4>
-                        <ul>
-                            <li>负责市场监管领域政务项目需求分析与产品设计，全程参与国家级、省级、市级多项目全流程设计与落地推进</li>
+                            <li><strong>复杂项目操盘</strong>：带领团队交付 1500W+ 大型政务项目，主导国家级/省级监管平台从顶层设计到落地的全流程建设。</li>
+                            <li><strong>政策规则转化</strong>：擅长宏观政策/行业标准解读，具备在多方利益博弈（政府、执行方、平台方）中推动复杂系统落地的卓越能力。</li>
+                            <li><strong>全域产品设计</strong>：负责市场监管领域核心政务项目需求分析，全程推进国家、省、市多级业务系统的原型设计与上线工作。</li>
                         </ul>
                     </div>
                 </div>
