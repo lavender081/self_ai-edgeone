@@ -6,16 +6,22 @@
     <title>Lavender - 个人主页</title>
     <style>
         :root {
-            --primary-color: #2563EB;
-            --primary-light: #EFF6FF;
-            --primary-border: #BFDBFE;
+            /* 沉稳高级的 黛青/深松石绿 (适合能源/智慧城市行业) */
+            --primary-color: #0D9488; 
+            --primary-hover: #0F766E;
+            --primary-light: #F0FDFA; 
+            --energy-glow: #0ea5e9; /* 补充一点科技蓝用于呼吸光环 */
+            
             --dark-main: #0F172A;
-            --text-body: #475569;
-            --text-muted: #94A3B8;
+            --text-body: #334155;
+            --text-muted: #64748B;
+            
             --bg-body: #F8FAFC;
             --bg-card: #FFFFFF;
-            --bg-tag: #F1F5F9;
-            --border-light: #E2E8F0;
+            
+            --border-light: rgba(226, 232, 240, 0.6);
+            --shadow-soft: 0 10px 40px -10px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02);
+            --shadow-hover: 0 20px 40px -10px rgba(13, 148, 136, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
         }
 
         * {
@@ -25,33 +31,36 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
+            font-family: "SF Pro Text", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+            line-height: 1.7;
             color: var(--text-body);
-            background-color: var(--bg-body);
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            min-height: 100vh;
             margin: 0;
             padding: 60px 8%;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1080px;
             margin: 0 auto;
         }
 
         section {
-            margin-bottom: 64px;
+            margin-bottom: 72px;
             width: 100%;
         }
 
         .card-shadow {
             background-color: var(--bg-card);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
-            border: 1px solid rgba(0,0,0,0.02);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
+        /* ---------------- Hero & Chat Section ---------------- */
         .hero-chat-section {
             display: flex;
             gap: 24px;
@@ -60,52 +69,106 @@
 
         .hero-content {
             flex: 1.2;
-            padding: 40px;
+            padding: 48px;
         }
 
-        .avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            margin-bottom: 24px;
-            object-fit: cover;
-            border: 1px solid var(--border-light);
+        .hero-header {
+            display: flex;
+            align-items: center;
+            gap: 24px; /* 稍微加宽一点标题和头像的间距 */
+            margin-bottom: 28px;
         }
+
+        /* ================== 头像特效核心代码 ================== */
+        .avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+        }
+
+        /* AI 数字分身呼吸光环特效 */
+        .avatar-wrapper::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--energy-glow));
+            z-index: 0;
+            animation: ai-breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes ai-breathe {
+            0% { transform: scale(1); opacity: 0.3; filter: blur(4px); }
+            50% { transform: scale(1.18); opacity: 0.7; filter: blur(10px); }
+            100% { transform: scale(1); opacity: 0.3; filter: blur(4px); }
+        }
+
+        /* 用来裁剪图片的内部遮罩层 */
+        .avatar-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden; /* 核心：完美切掉边界外的内容（即水印） */
+            z-index: 2;
+            border: 2px solid #ffffff;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 核心去水印魔法：放大1.2倍并将中心稍微上移，让右下角水印直接消失在圆环外 */
+            transform: scale(1.2) translateY(2%); 
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .avatar-wrapper:hover .avatar-image {
+            transform: scale(1.25) translateY(2%) rotate(2deg); /* 悬浮时带点交互感 */
+        }
+        /* ================== 头像特效结束 ================== */
 
         .hero-content h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 16px;
+            font-size: 34px;
+            font-weight: 800;
             color: var(--dark-main);
-            letter-spacing: -0.5px;
+            letter-spacing: -0.02em;
+            margin-bottom: 0;
+            background: linear-gradient(120deg, var(--dark-main) 0%, #334155 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 32px;
         }
 
         .hero-tags span {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-body);
-            background-color: var(--bg-tag);
-            padding: 4px 14px;
-            border-radius: 99px;
-            border: 1px solid rgba(0,0,0,0.03);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+            padding: 6px 16px;
+            border-radius: 8px;
+            letter-spacing: 0.02em;
         }
 
         .description-list {
             list-style: none;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
         }
 
         .description-list li {
             font-size: 15px;
-            margin-bottom: 12px;
-            padding-left: 20px;
+            margin-bottom: 16px;
+            padding-left: 24px;
             position: relative;
             color: var(--text-body);
         }
@@ -114,42 +177,45 @@
             content: '';
             position: absolute;
             left: 0;
-            top: 8px;
+            top: 10px;
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         .description-list strong {
             color: var(--dark-main);
             font-weight: 600;
+            margin-right: 4px;
         }
 
         .basic-info {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-light);
+            gap: 20px;
+            padding-top: 28px;
+            border-top: 1px dashed var(--border-light);
         }
 
         .info-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 24px;
+            gap: 32px;
         }
 
         .info-item {
             font-size: 14px;
-            color: var(--text-body);
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 500;
         }
 
         .info-item a {
-            color: var(--text-body);
+            color: var(--text-muted);
             text-decoration: none;
             transition: color 0.2s ease;
         }
@@ -161,176 +227,189 @@
         .skills-container {
             display: flex;
             align-items: flex-start;
-            gap: 8px;
+            gap: 12px;
             width: 100%;
         }
 
         .skills-label {
             font-size: 14px;
-            color: var(--text-body);
+            color: var(--text-muted);
             display: flex;
             align-items: center;
             gap: 6px;
             white-space: nowrap;
-            margin-top: 2px;
+            margin-top: 4px;
+            font-weight: 500;
         }
 
         .skills-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             flex: 1;
         }
 
         .skills-list span {
-            font-size: 12px;
-            font-weight: 400;
+            font-size: 13px;
+            font-weight: 500;
             color: var(--text-body);
-            background-color: var(--bg-tag);
-            border: 1px solid transparent; 
-            padding: 3px 10px;
-            border-radius: 4px;
+            background-color: #F1F5F9;
+            padding: 4px 12px;
+            border-radius: 6px;
             transition: all 0.2s ease;
         }
 
         .skills-list span:hover {
-            color: var(--dark-main);
-            background-color: var(--border-light);
+            color: var(--primary-color);
+            background-color: var(--primary-light);
         }
 
+        /* ---------------- Chat Widget ---------------- */
         .chat-container {
             flex: 0.8;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid var(--border-light);
+            border: 1px solid rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
         }
 
         .chat-header {
-            padding: 20px 24px 16px 24px;
+            padding: 20px 24px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            background-color: var(--bg-card);
+            gap: 12px;
+            background-color: rgba(255, 255, 255, 0.9);
             border-bottom: 1px solid var(--border-light);
             z-index: 2;
         }
 
         .status-indicator {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .header-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--dark-main);
+            letter-spacing: 0.02em;
         }
 
         .chat-messages {
             flex: 1;
             padding: 24px;
             overflow-y: auto;
-            background-color: var(--bg-body);
+            background-color: transparent;
         }
 
         .message {
-            margin-bottom: 16px;
-            max-width: 85%;
+            margin-bottom: 20px;
+            max-width: 88%;
             width: fit-content;
-            padding: 12px 16px;
+            padding: 14px 18px;
             font-size: 14px;
             line-height: 1.6;
             white-space: pre-wrap;
             word-break: break-word;
-            text-align: left !important;
         }
 
         .bot-message {
-            background-color: var(--bg-tag);
+            background-color: #FFFFFF;
             color: var(--text-body);
             border-radius: 4px 16px 16px 16px;
             margin-right: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .user-message {
-            background-color: var(--dark-main);
+            background-color: var(--primary-color);
             color: white;
             border-radius: 16px 16px 4px 16px;
             margin-left: auto;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.15);
         }
 
         .chat-input {
             padding: 16px 20px;
             display: flex;
             gap: 12px;
-            background-color: var(--bg-card);
+            background-color: #FFFFFF;
             border-top: 1px solid var(--border-light);
             align-items: center;
         }
 
         .chat-input input {
             flex: 1;
-            height: 42px;
+            height: 44px;
             padding: 0 16px;
             border: 1px solid var(--border-light);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
-            background-color: #ffffff;
+            background-color: #F8FAFC;
             outline: none;
             transition: all 0.2s ease;
         }
 
         .chat-input input:focus {
-            border-color: var(--dark-main);
-            box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.1);
+            background-color: #FFFFFF;
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         .chat-input button {
-            height: 42px;
-            padding: 0 20px;
+            height: 44px;
+            padding: 0 24px;
             background-color: var(--dark-main);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .chat-input button:hover {
-            background-color: var(--primary-color);
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
-        .chat-messages::-webkit-scrollbar { width: 6px; }
-        .chat-messages::-webkit-scrollbar-track { background: transparent; }
-        .chat-messages::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-        .chat-messages::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
-
+        /* ---------------- Section Titles ---------------- */
         .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 32px;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 40px;
             color: var(--dark-main);
-            display: inline-block;
-            border-bottom: 2px solid var(--dark-main);
-            padding-bottom: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: 0.05em;
         }
 
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 22px;
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* ---------------- Projects Carousel ---------------- */
         .projects-section {
-            padding: 40px;
+            padding: 48px;
         }
 
         .projects-carousel {
@@ -342,61 +421,76 @@
         .carousel-container {
             overflow: hidden;
             flex: 1;
-            padding: 10px 0;
+            padding: 20px 0;
+            margin: -20px 0;
         }
 
         .carousel-track {
             display: flex;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            align-items: stretch;
         }
 
         .project-card {
-            flex: 0 0 calc(33.333% - 12px);
+            flex: 0 0 calc(33.333% - 16px);
             background-color: var(--bg-card);
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid var(--border-light);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin: 0 6px;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            margin: 0 8px;
             position: relative;
             display: flex;
             flex-direction: column;
-            min-height: 420px; /* 稍微增高卡片以容纳固定高度对齐 */
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            transition: background 0.4s ease;
         }
 
         .project-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: transparent;
+        }
+
+        .project-card:hover::before {
+            background: var(--primary-color);
         }
 
         .project-number {
             position: absolute;
-            bottom: 16px;
-            right: 20px;
-            font-size: 40px;
-            font-weight: 800;
-            color: var(--text-muted);
-            opacity: 0.1;
+            top: 24px;
+            right: 24px;
+            font-size: 36px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-weight: 900;
+            color: var(--bg-body);
             z-index: 0;
+            line-height: 1;
         }
 
         .project-content {
-            padding: 24px;
+            padding: 32px 24px 28px;
             flex: 1;
             display: flex;
             flex-direction: column;
             z-index: 1;
         }
 
-        /* ==== 卡片排版核心修复点 ==== */
-
         .project-content h3 {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 8px;
             color: var(--dark-main);
-            line-height: 1.4;
-            /* 对齐规则1：将标题高度锁死为2行，不足则下方留白对齐 */
-            height: 50px; 
+            line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -407,101 +501,70 @@
             font-size: 13px;
             color: var(--text-muted);
             margin-bottom: 16px;
-            /* 对齐规则2：将副标题锁死为2行 */
-            height: 42px; 
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-family: monospace;
+            letter-spacing: -0.5px;
         }
 
         .project-description {
             font-size: 14px;
             color: var(--text-body);
             margin-bottom: 24px;
-            line-height: 1.6;
-            /* 对齐规则3：用flex:1将描述部分变成自适应弹性空间。它会吸收掉因字数不同产生的误差，将底部的标签死死地向下推对齐。*/
-            flex: 1; 
+            line-height: 1.7;
             display: -webkit-box;
-            -webkit-line-clamp: 5; /* 最高限制5行防止爆板 */
+            -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            text-align: justify;
         }
 
         .tech-tags {
-            margin-bottom: 16px;
-            /* 对齐规则4：固定标签容器的高度为2排，所有标签顶部和底部彻底水平对齐 */
-            height: 66px; 
+            margin-bottom: 24px;
             overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .tech-tags span {
-            display: inline-block;
-            margin-right: 6px;
-            margin-bottom: 8px;
             padding: 4px 10px;
-            background-color: var(--bg-tag);
-            color: var(--text-body);
+            background-color: #F8FAFC;
+            color: var(--text-muted);
+            border: 1px solid var(--border-light);
             border-radius: 4px;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .project-link {
             align-self: flex-start;
-            display: inline-block;
-            color: var(--text-body);
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
             text-decoration: none;
             font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s ease;
-            line-height: 1.2;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: auto;
+        }
+
+        .project-link::after {
+            content: '→';
+            margin-left: 6px;
+            transition: transform 0.2s ease;
+        }
+
+        .project-link:hover::after {
+            transform: translateX(4px);
         }
 
         .project-link-placeholder {
-            display: inline-block;
+            margin-top: auto;
             height: 20px;
-            width: 80px;
         }
 
-        /* ==== 卡片排版核心修复点 结束 ==== */
-
-        .carousel-btn {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            cursor: pointer;
-            z-index: 10;
-            transition: all 0.2s ease;
-            color: var(--text-body);
-        }
-        .carousel-btn:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        .prev-btn { margin-right: 16px; }
-        .next-btn { margin-left: 16px; }
-
-        .carousel-indicators {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 24px;
-        }
-        .indicator {
-            width: 8px; height: 8px;
-            border-radius: 4px;
-            background-color: var(--border-light);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .indicator.active {
-            width: 24px;
-            background-color: var(--primary-color);
-        }
-
+        /* ---------------- Timeline Section ---------------- */
         .timeline-section {
-            padding: 40px;
+            padding: 48px;
         }
 
         .timeline {
@@ -515,192 +578,173 @@
             left: 200px;
             top: 8px;
             bottom: 0;
-            width: 1px;
+            width: 2px;
             background-color: var(--border-light);
         }
 
         .timeline-item {
             position: relative;
             display: flex;
-            margin-bottom: 48px;
+            margin-bottom: 56px;
         }
 
         .timeline-date {
             width: 200px;
             font-size: 14px;
+            font-family: monospace;
             color: var(--text-muted);
-            padding-right: 40px;
+            padding-right: 48px;
             position: relative;
             text-align: right;
             padding-top: 2px;
+            letter-spacing: -0.5px;
         }
 
         .timeline-date::after {
             content: '';
             position: absolute;
-            right: -6px;
-            top: 6px;
-            width: 12px;
-            height: 12px;
+            right: -7px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background-color: var(--bg-card);
-            border: 2px solid var(--border-light);
+            background-color: var(--bg-body);
+            border: 3px solid var(--border-light);
             z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover .timeline-date::after {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
         }
 
         .timeline-item:first-child .timeline-date {
             color: var(--primary-color);
-            font-weight: 600;
+            font-weight: 700;
         }
+        
         .timeline-item:first-child .timeline-date::after {
             border-color: var(--primary-color);
-            border-width: 3px;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
 
         .timeline-content {
             flex: 1;
-            padding-left: 40px;
+            padding-left: 48px;
         }
 
         .timeline-content h3 {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 19px;
+            font-weight: 700;
             margin-bottom: 12px;
             color: var(--dark-main);
-        }
-
-        .timeline-content h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin: 24px 0 8px;
-            color: var(--text-body);
         }
 
         .timeline-content ul {
             list-style: none;
             padding: 0;
+            margin-top: 16px;
         }
 
         .timeline-content li {
-            font-size: 14px;
+            font-size: 14.5px;
             color: var(--text-body);
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             position: relative;
-            padding-left: 16px;
-            line-height: 1.6;
+            padding-left: 20px;
+            line-height: 1.7;
+            text-align: justify;
         }
 
         .timeline-content li::before {
-            content: '-';
+            content: '';
             position: absolute;
             left: 0;
-            color: var(--text-muted);
+            top: 9px;
+            width: 5px;
+            height: 5px;
+            border-radius: 1px;
+            background-color: var(--text-muted);
+            transform: rotate(45deg);
+            opacity: 0.6;
         }
 
-        @media (max-width: 768px) {
-            body { padding: 24px 16px; }
-            .container { width: 100%; }
-            section { margin-bottom: 40px; }
+        .timeline-content strong {
+            color: var(--dark-main);
+            font-weight: 600;
+        }
 
+        /* ---------------- Controls ---------------- */
+        .carousel-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.2s ease;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .carousel-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+        }
+
+        .prev-btn { margin-right: 20px; }
+        .next-btn { margin-left: 20px; }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 32px;
+        }
+        
+        .indicator {
+            width: 8px; height: 8px;
+            border-radius: 4px;
+            background-color: var(--border-light);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        
+        .indicator.active {
+            width: 32px;
+            background-color: var(--primary-color);
+        }
+
+        /* ---------------- Mobile Adjustments ---------------- */
+        @media (max-width: 768px) {
+            body { padding: 20px 16px; }
             .hero-content, .chat-container, .projects-section, .timeline-section {
-                padding: 20px !important;
+                padding: 24px !important;
                 border-radius: 16px;
             }
-
-            .hero-chat-section {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .avatar { width: 60px; height: 60px; }
-            .hero-content h1 { font-size: 24px; margin-bottom: 12px; }
-            .hero-tags { gap: 8px; margin-bottom: 20px; }
-            
-            .description-list li { font-size: 14px; }
-            .basic-info { padding-top: 16px; gap: 12px; }
-            
-            .skills-container {
-                flex-direction: column;
-                gap: 6px;
-            }
-            .skills-label { margin-top: 0; }
-            .skills-list span { padding: 3px 8px; font-size: 12px; }
-
-            .chat-messages {
-                height: 240px;
-                padding: 16px;
-                box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
-            }
-
-            .chat-input { padding: 12px 16px; gap: 8px; }
-            .chat-input input { height: 38px; }
-            .chat-input button { height: 38px; padding: 0 16px; }
-
+            .hero-chat-section { flex-direction: column; gap: 24px; }
+            .hero-header { gap: 16px; margin-bottom: 24px; }
+            .avatar-wrapper { width: 68px; height: 68px; }
+            .hero-content h1 { font-size: 26px; }
             .projects-carousel { display: block; }
             .carousel-btn { display: none; }
-            .carousel-track {
-                flex-direction: column;
-                transform: none !important;
-                gap: 20px;
-            }
-
-            .project-card {
-                flex: none;
-                width: 100%;
-                margin: 0;
-                min-height: auto;
-            }
-            .project-content { min-height: auto !important; }
-
-            /* 移动端覆盖：移动端竖向排版不需要僵硬对齐，取消固定高度，恢复自然流式排版 */
-            .project-content h3, 
-            .project-meta, 
-            .tech-tags {
-                height: auto;
-                display: block;
-            }
-            .project-description {
-                flex: none;
-                -webkit-line-clamp: unset;
-                margin-bottom: 16px;
-            }
-            .tech-tags span { border-radius: 99px; }
-
+            .carousel-track { flex-direction: column; transform: none !important; gap: 24px; }
+            .project-card { flex: none; width: 100%; margin: 0; }
             .carousel-indicators { display: none; }
-
-            .timeline::before { left: 6px; }
-            .timeline-item {
-                flex-direction: column;
-                margin-bottom: 32px;
-            }
+            .timeline::before { left: 8px; }
+            .timeline-item { flex-direction: column; margin-bottom: 40px; }
             .timeline-date {
-                width: 100%;
-                text-align: left;
-                padding-left: 24px;
-                padding-right: 0;
-                margin-bottom: 4px;
-                font-size: 13px;
-                opacity: 0.8;
+                width: 100%; text-align: left; padding-left: 32px; padding-right: 0; margin-bottom: 8px; font-size: 13px;
             }
-            .timeline-date::after {
-                left: 1px;
-                right: auto;
-                top: 4px;
-            }
-            .timeline-content {
-                padding-left: 24px;
-                width: 100%;
-            }
-            .timeline-content h3 {
-                font-size: 16px;
-                margin-bottom: 8px;
-                line-height: 1.4;
-            }
-            .timeline-content h4 {
-                font-size: 13px;
-                color: var(--text-muted);
-                margin: 16px 0 6px;
-            }
+            .timeline-date::after { left: 0; right: auto; top: 4px; }
+            .timeline-content { padding-left: 32px; width: 100%; }
         }
     </style>
 </head>
@@ -709,8 +753,17 @@
 
         <section class="hero-chat-section">
             <div class="hero-content card-shadow">
-                <img src="https://miaoduo.fbcontent.cn/private/resource/image/0ef4583e-947d-4aed-90b1-3b09c308890a.png" alt="Lavender" class="avatar">
-                <h1>你好，我是 Lavender</h1>
+                
+                <div class="hero-header">
+                    <!-- 头像区域（带有AI呼吸环与自动裁剪水印功能） -->
+                    <div class="avatar-wrapper">
+                        <div class="avatar-inner">
+                            <!-- ⚠️ 请将这里的 src 替换为你保存的图片路径，比如 "avatar.png" -->
+                            <img src="avatar.png" alt="Lavender" class="avatar-image">
+                        </div>
+                    </div>
+                    <h1>你好，我是 Lavender</h1>
+                </div>
 
                 <div class="hero-tags">
                     <span>数字能源/智慧城市业务专家</span>
@@ -726,13 +779,13 @@
                 <div class="basic-info">
                     <div class="info-row">
                         <div class="info-item"><span>👤</span> 女 | 1996-09</div>
+                        <div class="info-item"><span>🎓</span> 浙江大学/物理系/本科</div>
                         <div class="info-item"><span>📱</span> 17816872286</div>
                         <div class="info-item"><span>✉️</span> <a href="mailto:17816872286@163.com">17816872286@163.com</a></div>
-                        <div class="info-item"><span>🎓</span> 浙江大学/物理系/本科</div>
                     </div>
                     
                     <div class="skills-container">
-                        <div class="skills-label"><span>💡</span> 核心技能与认证：</div>
+                        <div class="skills-label"><span>💡</span> 核心技能：</div>
                         <div class="skills-list">
                             <span>Vibe Coding</span>
                             <span>Axure</span>
@@ -747,20 +800,21 @@
             <div class="chat-container card-shadow">
                 <div class="chat-header">
                     <span class="status-indicator"></span>
-                    <span class="header-title">数字分身聊天</span>
+                    <span class="header-title">数字分身 AI Assistant</span>
                 </div>
                 <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message">你好！我是Lavender的数字分身。关于她的ToB业务经验、项目成果和AI应用能力，你可以随时问我。</div>
+                    <div class="message bot-message">您好！我是 Lavender 的数字分身。关于她在「数字能源」、「政企数字化」或「复杂系统操盘」领域的经验，您可以随时向我提问。</div>
                 </div>
                 <div class="chat-input">
-                    <input type="text" id="userInput" placeholder="输入你的问题..." autocomplete="off">
+                    <input type="text" id="userInput" placeholder="输入您的问题..." autocomplete="off">
                     <button id="sendButton">发送</button>
                 </div>
             </div>
         </section>
 
+        <!-- 这里的项目卡片和经历代码不变 -->
         <section class="projects-section card-shadow">
-            <h2 class="section-title">核心项目</h2>
+            <h2 class="section-title">核心项目操盘</h2>
 
             <div class="projects-carousel">
                 <button class="carousel-btn prev-btn">←</button>
@@ -770,15 +824,15 @@
                         <div class="project-card">
                             <div class="project-number">01</div>
                             <div class="project-content">
-                                <h3>综合能源管理系统</h3>
-                                <div class="project-meta">2025-04 至今 | 产品经理</div>
+                                <h3>综合能源管理系统 (EMS)</h3>
+                                <div class="project-meta">2025.04 - 至今 | 产品经理</div>
                                 <p class="project-description">主导新一代 EMS 平台 0-1 架构设计与商业化落地；构建深度 AIoT 物联底座，打通“监测-计量-计费-管控”闭环；为海量中小建筑参与电网互动及虚拟电厂演进奠定数据基础。</p>
                                 <div class="tech-tags">
                                     <span>0-1 产品操盘</span>
                                     <span>AIoT底座</span>
-                                    <span>能源管理</span>
+                                    <span>能源优化</span>
                                 </div>
-                                <a href="https://a.bbicloud.com/v2/#/index-pc" target="_blank" class="project-link">查看项目详情</a>
+                                <a href="https://a.bbicloud.com/v2/#/index-pc" target="_blank" class="project-link">查看详情</a>
                             </div>
                         </div>
 
@@ -786,42 +840,42 @@
                             <div class="project-number">02</div>
                             <div class="project-content">
                                 <h3>闵行区智慧监管云中心</h3>
-                                <div class="project-meta">2021-04 - 2024-06 | 项目经理</div>
+                                <div class="project-meta">2021.04 - 2024.06 | 项目经理</div>
                                 <p class="project-description">统筹千万级政务核心监管中枢顶层规划与全生命周期建设。攻克“信创国产化”与“跨部门数据融通”难题。将宏观政策指令精准转化为平台底层业务规则。</p>
                                 <div class="tech-tags">
-                                    <span>千万级G端大单</span>
+                                    <span>千万级大单</span>
                                     <span>信创改造</span>
-                                    <span>复杂系统架构</span>
+                                    <span>复杂架构</span>
                                 </div>
-                                <a href="https://mp.weixin.qq.com/s/yfIx3DY3BKEgqCRA7I5zdQ" target="_blank" class="project-link">查看项目详情</a>
+                                <a href="https://mp.weixin.qq.com/s/yfIx3DY3BKEgqCRA7I5zdQ" target="_blank" class="project-link">查看详情</a>
                             </div>
                         </div>
 
                         <div class="project-card">
                             <div class="project-number">03</div>
                             <div class="project-content">
-                                <h3>微度医疗 CRM 优化项目</h3>
-                                <div class="project-meta">2025-01 - 2025-03 | 客户成功项目经理</div>
-                                <p class="project-description">作为核心业务接口人，跨部门统筹客户 CRM 体系的售前攻坚与交付实施。通过数据洞察驱动商业策略优化，显著提升客户续费率与变现效率。</p>
+                                <h3>微度医疗 CRM 商业优化</h3>
+                                <div class="project-meta">2025.01 - 2025.03 | 客户成功 PM</div>
+                                <p class="project-description">作为核心业务接口人，跨部门统筹客户 CRM 体系的售前攻坚与交付实施。通过数据洞察驱动商业策略优化，显著提升客户续费率与系统变现效率。</p>
                                 <div class="tech-tags">
                                     <span>ToB SaaS</span>
                                     <span>全流程交付</span>
-                                    <span>商业策略优化</span>
+                                    <span>策略优化</span>
                                 </div>
-                                <a href="https://www.fxiaoke.com/ap/sem?utm_source=%E7%99%BE%E5%BA%A6&utm_medium=bdbrand&utm_term=pz" target="_blank" class="project-link">查看项目详情</a>
+                                <a href="https://www.fxiaoke.com/ap/sem?utm_source=%E7%99%BE%E5%BA%A6&utm_medium=bdbrand&utm_term=pz" target="_blank" class="project-link">查看详情</a>
                             </div>
                         </div>
 
                         <div class="project-card">
                             <div class="project-number">04</div>
                             <div class="project-content">
-                                <h3>市监总局智慧监管中心综合展示</h3>
-                                <div class="project-meta">2020-08 - 2021-03 | 产品经理</div>
-                                <p class="project-description">统筹国家级政务项目团队管理与协调，完成 5 大核心业务局全量需求梳理与产品原型设计，确保国家级智慧监管中枢平稳上线。</p>
+                                <h3>国家市监总局智慧监管中心</h3>
+                                <div class="project-meta">2020.08 - 2021.03 | 产品经理</div>
+                                <p class="project-description">统筹国家级政务项目团队管理与协调，完成 5 大核心业务局全量需求梳理与产品原型设计，确保国家级智慧监管中枢平稳上线与高标准验收。</p>
                                 <div class="tech-tags">
-                                    <span>国家级政务项目</span>
+                                    <span>国家级政务</span>
                                     <span>需求统筹</span>
-                                    <span>产品设计</span>
+                                    <span>多方博弈</span>
                                 </div>
                                 <span class="project-link-placeholder"></span>
                             </div>
@@ -830,13 +884,13 @@
                         <div class="project-card">
                             <div class="project-number">05</div>
                             <div class="project-content">
-                                <h3>河北省市场监管局信息化系统</h3>
-                                <div class="project-meta">2019-12 - 2020-07 | 售前解决负责人</div>
-                                <p class="project-description">独立操盘省级应急指挥平台高层宣讲与方案落地，验收后全省推广；协助完成全省市场监管信息化顶层设计，建立全省统一建设标准。</p>
+                                <h3>河北省市场监管局信息化平台</h3>
+                                <div class="project-meta">2019.12 - 2020.07 | 售前方案负责人</div>
+                                <p class="project-description">完成省级应急指挥平台高层宣讲与方案落地；协助完成全省市场监管信息化顶层设计，协调各方资源打破业务壁垒，建立全省统一的数据建设标准。</p>
                                 <div class="tech-tags">
                                     <span>政务售前</span>
                                     <span>顶层设计</span>
-                                    <span>应急指挥</span>
+                                    <span>标准制定</span>
                                 </div>
                                 <span class="project-link-placeholder"></span>
                             </div>
@@ -854,40 +908,40 @@
         </section>
 
         <section class="timeline-section card-shadow">
-            <h2 class="section-title">工作经历</h2>
+            <h2 class="section-title">履历与经验</h2>
 
             <div class="timeline">
                 <div class="timeline-item">
-                    <div class="timeline-date">2025-04 至今</div>
+                    <div class="timeline-date">2025.04 - 至今</div>
                     <div class="timeline-content">
-                        <h3>杭州基础创新科技有限公司 | 产品经理</h3>
+                        <h3>杭州基础创新科技有限公司 <span>| 产品经理</span></h3>
                         <ul>
-                            <li><strong>底座构建</strong>：搭建底层 AIoT 架构，打通配电、水务等边缘侧数据，研究碳核算模型，为虚拟电厂聚合演进奠定基础。</li>
-                            <li><strong>平台落地</strong>：主导新一代 EMS 平台 0-1 架构与落地，引入 AI 负荷分析，完成商业规划到软硬件协同研发的全链路管控。</li>
-                            <li><strong>商业变现</strong>：支撑核心大客户攻坚，将晦涩的能源优化逻辑转化为直观的投资回报模型，促成多项商业化签约。</li>
+                            <li><strong>底座构建</strong>：搭建底层 AIoT 架构，打通配电、水务等边缘侧数据，研究碳核算模型，为虚拟电厂聚合演进奠定坚实的数据与控制基础。</li>
+                            <li><strong>平台落地</strong>：主导新一代 EMS 平台 0-1 架构与落地，引入 AI 负荷分析算法，完成从商业化规划到软硬件协同研发的全链路管控。</li>
+                            <li><strong>商业变现</strong>：支撑核心大客户攻坚，将晦涩复杂的能源优化逻辑转化为直观的投资回报 (ROI) 模型，促成多项战略级商业化签约。</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">2024-09 - 2025-03</div>
+                    <div class="timeline-date">2024.09 - 2025.03</div>
                     <div class="timeline-content">
-                        <h3>纷享销客浙江分公司 | 客户成功项目经理</h3>
+                        <h3>纷享销客浙江分公司 <span>| 客户成功项目经理</span></h3>
                         <ul>
-                            <li><strong>项目交付</strong>：深度挖掘 ToB SaaS 客户需求，统筹多项目全生命周期交付，协调跨部门资源保障项目高质量落地。</li>
-                            <li><strong>售前攻坚</strong>：协同团队完成售前方案输出与技术宣讲，赋能销售端，助力多个重点项目顺利签约。</li>
+                            <li><strong>项目交付</strong>：深度挖掘 ToB SaaS 业务场景客户真实需求，统筹多项目全生命周期交付，协调跨部门资源网络保障项目高质量落地。</li>
+                            <li><strong>售前攻坚</strong>：协同团队完成复杂售前方案输出与高层技术宣讲，赋能一线销售端，助力多个重点/标杆项目顺利签单验收。</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="timeline-item">
-                    <div class="timeline-date">2019-04 - 2024-06</div>
+                    <div class="timeline-date">2019.04 - 2024.06</div>
                     <div class="timeline-content">
-                        <h3>天玑智成（北京）科技有限公司 | 项目经理 & 产品经理</h3>
+                        <h3>天玑智成（北京）科技有限公司 <span>| 项目经理 & 产品经理</span></h3>
                         <ul>
-                            <li><strong>复杂项目操盘</strong>：带领团队交付 1500W+ 大型政务项目，主导国家级/省级监管平台从顶层设计到落地的全流程建设。</li>
-                            <li><strong>政策规则转化</strong>：擅长宏观政策/行业标准解读，具备在多方利益博弈（政府、执行方、平台方）中推动复杂系统落地的卓越能力。</li>
-                            <li><strong>全域产品设计</strong>：负责市场监管领域核心政务项目需求分析，全程推进国家、省、市多级业务系统的原型设计与上线工作。</li>
+                            <li><strong>复杂项目操盘</strong>：带领跨职能团队交付 1500W+ 大型核心政务项目，主导国家级/省级监管平台从顶层设计到研发落地的全流程建设。</li>
+                            <li><strong>政策规则转化</strong>：极度擅长宏观政策及行业标准解读，具备在极度复杂的利益博弈（政府、执行方、平台方）中推动庞大系统落地的卓越协调能力。</li>
+                            <li><strong>全域产品设计</strong>：全面负责市场监管领域核心政务项目需求深度分析，全程推进国家、省、市多层级业务系统的原型架构设计与投产上线工作。</li>
                         </ul>
                     </div>
                 </div>
@@ -905,7 +959,7 @@
                 userInput.value = '';
 
                 try {
-                    const loadingMessage = addMessage('正在思考...', 'bot');
+                    const loadingMessage = addMessage('AI 正在思考...', 'bot');
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -924,7 +978,7 @@
 
                     addMessage(data.response, 'bot');
                 } catch (error) {
-                    addMessage(`抱歉，我暂时无法回答你的问题。错误信息: ${error.message}`, 'bot');
+                    addMessage(`系统繁忙，我暂时无法回答您的问题。错误信息: ${error.message}`, 'bot');
                 }
             }
         }
@@ -957,7 +1011,7 @@
             const maxIndex = 1;
 
             function updateCarousel() {
-                const cardWidth = cards[0].offsetWidth + 20;
+                const cardWidth = cards[0].offsetWidth + 16;
                 const offset = currentIndex === 0 ? 0 : cardWidth * 3;
                 track.style.transform = `translateX(-${offset}px)`;
 
