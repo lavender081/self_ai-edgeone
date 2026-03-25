@@ -30,53 +30,41 @@ const SYSTEM_PROMPT = `你是 Lavender 的专属数字分身（AI Assistant）�
    - 适当点缀少量专业大气的 emoji（如 💡、🎯、⚡、📊），提升视觉体验，但绝不滥用。
 4. 语气专业且有温度：保持自信、从容、高级的职场专家口吻。结尾可自然引导访客添加微信（17816872286）或发送邮件进一步探讨。`;
 
-async function handler({ request }) {
-  console.log('Received request to /api/chat:', request.method);
+async function handler(req, res) {
+  console.log('Received request to /api/chat:', req.method);
 
-  if (request.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: CORS_HEADERS
-    });
+  // 设置 CORS 响应头
+  Object.keys(CORS_HEADERS).forEach(key => {
+    res.setHeader(key, CORS_HEADERS[key]);
+  });
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
   }
 
-  if (request.method === 'POST') {
+  if (req.method === 'POST') {
     try {
       const apiKey = process.env.DASHSCOPE_API_KEY;
       
       if (!apiKey) {
-        return new Response(JSON.stringify({ error: '未配置 DASHSCOPE_API_KEY 环境变量' }), {
-          status: 500,
-          headers: {
-            ...CORS_HEADERS,
-            'Content-Type': 'application/json; charset=UTF-8'
-          }
-        });
+        res.status(500).json({ error: '未配置 DASHSCOPE_API_KEY 环境变量' });
+        return;
       }
 
       let body;
       try {
-        body = await request.json();
+        body = req.body || {};
       } catch (e) {
-        return new Response(JSON.stringify({ error: '请求体格式错误' }), {
-          status: 400,
-          headers: {
-            ...CORS_HEADERS,
-            'Content-Type': 'application/json; charset=UTF-8'
-          }
-        });
+        res.status(400).json({ error: '请求体格式错误' });
+        return;
       }
 
       const message = body.message || '';
       
       if (!message.trim()) {
-        return new Response(JSON.stringify({ error: '请提供消息内容' }), {
-          status: 400,
-          headers: {
-            ...CORS_HEADERS,
-            'Content-Type': 'application/json; charset=UTF-8'
-          }
-        });
+        res.status(400).json({ error: '请提供消息内容' });
+        return;
       }
 
       const apiHeaders = {
@@ -115,63 +103,28 @@ async function handler({ request }) {
         const data = await response.json();
 
         if (!data.choices || data.choices.length === 0) {
-          return new Response(JSON.stringify({ error: '大模型API返回格式错误' }), {
-            status: 500,
-            headers: {
-              ...CORS_HEADERS,
-              'Content-Type': 'application/json; charset=UTF-8'
-            }
-          });
+          res.status(500).json({ error: '大模型API返回格式错误' });
+          return;
         }
 
         const botResponse = data.choices[0].message?.content || '抱歉，我暂时无法回答您的问题，请直接联系 Lavender (17816872286)。';
-        return new Response(JSON.stringify({ response: botResponse }), {
-          status: 200,
-          headers: {
-            ...CORS_HEADERS,
-            'Content-Type': 'application/json; charset=UTF-8'
-          }
-        });
+        res.status(200).json({ response: botResponse });
         
       } catch (fetchError) {
         clearTimeout(timeout);
         if (fetchError.name === 'AbortError') {
-          return new Response(JSON.stringify({ error: '请求超时，请稍后重试' }), {
-            status: 504,
-            headers: {
-              ...CORS_HEADERS,
-              'Content-Type': 'application/json; charset=UTF-8'
-            }
-          });
+          res.status(504).json({ error: '请求超时，请稍后重试' });
         } else {
-          return new Response(JSON.stringify({ error: `大模型连接失败: ${fetchError.message}` }), {
-            status: 500,
-            headers: {
-              ...CORS_HEADERS,
-              'Content-Type': 'application/json; charset=UTF-8'
-            }
-          });
+          res.status(500).json({ error: `大模型连接失败: ${fetchError.message}` });
         }
       }
 
     } catch (error) {
       console.error('Server error:', error);
-      return new Response(JSON.stringify({ error: `服务器内部错误: ${error.message}` }), {
-        status: 500,
-        headers: {
-          ...CORS_HEADERS,
-          'Content-Type': 'application/json; charset=UTF-8'
-        }
-      });
+      res.status(500).json({ error: `服务器内部错误: ${error.message}` });
     }
   } else {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: {
-        ...CORS_HEADERS,
-        'Content-Type': 'application/json; charset=UTF-8'
-      }
-    });
+    res.status(405).json({ error: 'Method not allowed' });
   }
 }
 
