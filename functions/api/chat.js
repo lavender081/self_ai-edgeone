@@ -42,15 +42,26 @@ export const onRequest = async ({ request }) => {
 
   if (request.method === 'POST') {
     try {
+      console.log('Starting POST request processing');
+      
       let apiKey;
       try {
-        apiKey = process.env.DASHSCOPE_API_KEY;
+        console.log('Checking process.env object:', typeof process);
+        if (process && process.env) {
+          console.log('Process.env exists, checking DASHSCOPE_API_KEY');
+          apiKey = process.env.DASHSCOPE_API_KEY;
+          console.log('API Key found:', apiKey ? 'Yes' : 'No');
+        } else {
+          console.log('Process or process.env is undefined');
+          apiKey = undefined;
+        }
       } catch (e) {
-        // 尝试使用EdgeOne的环境变量获取方式
+        console.log('Error accessing process.env:', e.message);
         apiKey = undefined;
       }
       
       if (!apiKey) {
+        console.log('API Key is undefined, returning error');
         return new Response(JSON.stringify({ error: '未配置 DASHSCOPE_API_KEY 环境变量' }), {
           status: 500,
           headers: {
@@ -59,6 +70,8 @@ export const onRequest = async ({ request }) => {
           }
         });
       }
+      
+      console.log('API Key retrieved successfully, proceeding with request');
 
       let body;
       try {
