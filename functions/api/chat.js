@@ -42,7 +42,13 @@ export const onRequest = async ({ request }) => {
 
   if (request.method === 'POST') {
     try {
-      const apiKey = process.env.DASHSCOPE_API_KEY;
+      let apiKey;
+      try {
+        apiKey = process.env.DASHSCOPE_API_KEY;
+      } catch (e) {
+        // 尝试使用EdgeOne的环境变量获取方式
+        apiKey = undefined;
+      }
       
       if (!apiKey) {
         return new Response(JSON.stringify({ error: '未配置 DASHSCOPE_API_KEY 环境变量' }), {
