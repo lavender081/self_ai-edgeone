@@ -44,21 +44,9 @@ export const onRequest = async ({ request }) => {
     try {
       console.log('Starting POST request processing');
       
-      let apiKey;
-      try {
-        console.log('Checking process.env object:', typeof process);
-        if (process && process.env) {
-          console.log('Process.env exists, checking DASHSCOPE_API_KEY');
-          apiKey = process.env.DASHSCOPE_API_KEY;
-          console.log('API Key found:', apiKey ? 'Yes' : 'No');
-        } else {
-          console.log('Process or process.env is undefined');
-          apiKey = undefined;
-        }
-      } catch (e) {
-        console.log('Error accessing process.env:', e.message);
-        apiKey = undefined;
-      }
+      // 暂时硬编码API密钥进行测试
+      const apiKey = 'sk-6ffc26d9650f4aa9826ca89d439d67e5';
+      console.log('Using hardcoded API key for testing');
       
       if (!apiKey) {
         console.log('API Key is undefined, returning error');
@@ -71,7 +59,7 @@ export const onRequest = async ({ request }) => {
         });
       }
       
-      console.log('API Key retrieved successfully, proceeding with request');
+      console.log('API Key set successfully, proceeding with request');
 
       let body;
       try {
