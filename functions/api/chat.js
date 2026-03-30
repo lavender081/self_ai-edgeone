@@ -43,11 +43,10 @@ export const onRequest = async ({ request }) => {
   if (request.method === 'POST') {
     try {
       console.log('Starting POST request processing');
-      
-      // 暂时硬编码API密钥进行测试
-      const apiKey = 'sk-6ffc26d9650f4aa9826ca89d439d67e5';
-      console.log('Using hardcoded API key for testing');
-      
+
+      // 从环境变量获取API密钥
+      const apiKey = process.env.DASHSCOPE_API_KEY;
+
       if (!apiKey) {
         console.log('API Key is undefined, returning error');
         return new Response(JSON.stringify({ error: '未配置 DASHSCOPE_API_KEY 环境变量' }), {
@@ -58,8 +57,8 @@ export const onRequest = async ({ request }) => {
           }
         });
       }
-      
-      console.log('API Key set successfully, proceeding with request');
+
+      console.log('API Key retrieved successfully, proceeding with request');
 
       let body;
       try {
@@ -75,7 +74,7 @@ export const onRequest = async ({ request }) => {
       }
 
       const message = body.message || '';
-      
+
       if (!message.trim()) {
         return new Response(JSON.stringify({ error: '请提供消息内容' }), {
           status: 400,
@@ -139,7 +138,7 @@ export const onRequest = async ({ request }) => {
             'Content-Type': 'application/json; charset=UTF-8'
           }
         });
-        
+
       } catch (fetchError) {
         clearTimeout(timeout);
         if (fetchError.name === 'AbortError') {
