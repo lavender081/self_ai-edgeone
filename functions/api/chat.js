@@ -44,8 +44,13 @@ export const onRequest = async ({ request }) => {
     try {
       console.log('Starting POST request processing');
 
-      // 从环境变量获取API密钥
-      const apiKey = process.env.DASHSCOPE_API_KEY;
+      // 获取API密钥，兼容不同环境
+      let apiKey;
+      try {
+        apiKey = process.env.DASHSCOPE_API_KEY;
+      } catch (e) {
+        console.log('Error accessing process.env:', e.message);
+      }
 
       if (!apiKey) {
         console.log('API Key is undefined, returning error');
